@@ -8,11 +8,34 @@ description: Build an interactive annotated wireframe as a single self-contained
 Deliverable is one `.html` file that opens in a browser with no build step. Tabs: Overview → Screen map → Flows → Screens → Review.
 
 - `references/template.html` — ready-to-copy scaffold; replace every `{{...}}`
-- `references/conventions.md` — standard wireframe conventions; read it when deciding fidelity or what to annotate
+- `references/conventions.md` — standard wireframe conventions; read it when deciding fidelity or what to annotate. **This file wins any conflict with it.**
 
 **A wireframe without annotations is not a deliverable** — it is a set of gray boxes everyone interprets differently. The picture shows *what it looks like*; annotations explain *how it behaves and why*.
 
-**Language:** write UI labels, screen names, and sample data in the language the real app uses (Thai app → Thai labels). Keep the annotation tags and structural keys as defined here.
+## Language & type
+
+Write **UI labels, screen names, sample data, the page chrome (tab names, panel headings, legend), and the annotation text** in the language the real app uses. Only these stay English, because they are structural keys the tooling matches on: the six **annotation tags** (`behavior` / `rule` / …), screen **ids**, and **routes**.
+
+For a Thai app:
+
+- `<html lang="th">` — wrong `lang` gives the browser the wrong line-breaking rules
+- **One font stack, no webfont** — `system-ui, -apple-system, "Noto Sans Thai", sans-serif`, identical in normal and Artifact mode. Never a Google Fonts link: it dies under the Artifact CSP and silently reflows every screen you already checked
+- `line-height: 1.6` minimum — Thai ascenders and tone marks need more leading than Latin at the same size
+- **`overflow-wrap: break-word`, never `anywhere`** — Thai has no spaces, so `anywhere` chops words mid-syllable
+- Dates: pick พ.ศ. or ค.ศ. per the real app and use it in *every* sample value — mixed eras in sample data read as a bug
+- Thai labels run ~15–20% longer than the English draft. Size buttons and table columns for the Thai string, not the English one
+
+## Screen widths
+
+Three numbers, and they are not interchangeable:
+
+| width | what it is |
+|---|---|
+| **360px** | inside the `phone()` frame — the narrowest real device the app must survive |
+| **375px** | the width the *wireframe document* is checked at; 360 + border fits inside it, which is why the page must never scroll horizontally there |
+| **900px** | where the *wireframe document* collapses desktop frames to one column — a property of this page, **not** a breakpoint of the app being designed |
+
+Draw a screen at **both `phone()` and `desktop()`** when the two layouts differ in more than width — different navigation, a column that disappears, an action bar that moves. One frame is enough when the desktop version is the same structure stretched. If the product's own breakpoints matter, they are an annotation (`dev`), never inferred from the 900px above.
 
 ---
 
@@ -93,14 +116,21 @@ Default is **mid-fi**. Ask if unclear.
 
 ### 0. Recon — gather ground truth before writing a line
 
+You need: **every route · menu labels verbatim · design tokens · roles and permissions · business rules that constrain the UI.** Where those live depends on the stack — find them, don't assume a React SPA:
+
+| stack | routes | menu labels |
+|---|---|---|
+| React SPA | `rg -n "path:\|<Route\|createBrowserRouter" src/main.tsx src/App.tsx src/router*` | `rg -n "title\|label\|href\|icon" src/components/*sidebar* src/components/*nav*` |
+| Next.js App Router | `fd -t d -g "**" app \| rg "page\.\|route\."` — the folder tree *is* the routes | `rg -n "label\|title" app/**/nav* components/**/nav*` |
+| Remix / React Router v7 | `rg -n "route\(" app/routes.ts` or `ls app/routes/` | same as React SPA |
+| WordPress | `rg -n "register_post_type\|add_rewrite_rule\|add_menu_page" --glob "*.php"` · template hierarchy in the theme | `rg -n "wp_nav_menu\|register_nav_menus" --glob "*.php"` |
+
 ```bash
-rg -n "path:|<Route|createBrowserRouter" src/main.tsx src/App.tsx src/router* 2>/dev/null
-rg -n "title|label|url|icon" src/components/*sidebar* src/components/*nav* 2>/dev/null
-rg -n "@theme|--color-|--font-" src/index.css tailwind.config.* src/lib/design-system.ts 2>/dev/null
+rg -n "@theme|--color-|--font-" src/index.css app/globals.css tailwind.config.* src/lib/design-system.ts 2>/dev/null
 ls docs/ docs/adr/ 2>/dev/null
 ```
 
-You need: **every route · menu labels verbatim · design tokens · roles and permissions · business rules that constrain the UI.**
+**If the recon comes back empty, say so and stop — do not fill the gap by guessing.** Ask the owner where routes and labels live, or mark every screen `source: proposal` in the header.
 
 ### 1. Draft the screen inventory first
 
@@ -124,7 +154,15 @@ Replace tokens, product name, `APP_NAV`, `screens`, and the mermaid diagrams. **
 
 ### 4. Deliver
 
-- **File in the repo** — `docs/wireframes/<name>.html`, then tell the user the path
+**Where the file goes depends on whether the project has a repo yet** — a wireframe is a spec, and a spec belongs next to the code it specifies:
+
+| | path | why |
+|---|---|---|
+| project **has a dev repo** | `<repo>/docs/wireframes/<kebab-name>.html` | in git → diffable, tied to the PR that changed the screen, found by whoever implements it |
+| project has **no repo yet** (pitch, IA exploration) | the knowledge base's own attachments dir, e.g. `assets/wireframes/<slug>-YYYY-MM-DD.html` | nowhere else to live yet — move it into `docs/wireframes/` the day the repo exists |
+
+Never keep a second copy in a wiki or notes vault once the repo copy exists — link to the repo URL instead. Tell the user the path either way.
+
 - **Publish as an Artifact** — load the `artifact-design` skill first, then apply Artifact mode below
 
 ---
@@ -136,10 +174,10 @@ Replace tokens, product name, `APP_NAV`, `screens`, and the mermaid diagrams. **
 | **Overview** | how many surfaces, who sees what | surface cards, role → can do / blocked table, toggleable modules |
 | **Screen map** | where each user type enters | mermaid `flowchart` per surface + menu IA |
 | **Flows** | what the system revolves around | 3–5 `sequenceDiagram` / `flowchart`, each with its failure branch |
-
-**Flows are always real `.mermaid` blocks — never boxes and arrows hand-built from divs.** Mermaid lays itself out, stays diffable in git, and survives edits; a flowchart built from flexbox has to be redrawn by hand every time a branch changes.
 | **Screens** | how it looks and behaves | legend + left nav + stage + **annotation panel** |
 | **Review** | what to detail next | 2–3 forms letting the user steer the next round |
+
+**Flows are always real `.mermaid` blocks — never boxes and arrows hand-built from divs.** Mermaid lays itself out, stays diffable in git, and survives edits; a flowchart built from flexbox has to be redrawn by hand every time a branch changes.
 
 ## Toolkit inside the file
 
@@ -159,12 +197,13 @@ Replace tokens, product name, `APP_NAV`, `screens`, and the mermaid diagrams. **
 
 ## Artifact mode (strict CSP)
 
-Publishing through the Artifact tool blocks every off-host request, so change four things:
+Publishing through the Artifact tool blocks every off-host request, so change three things:
 
 1. Drop CDN Tailwind → hand-write the CSS
-2. Drop Google Fonts → `system-ui, -apple-system, "Noto Sans Thai", sans-serif`
-3. Drop the mermaid ESM import → switch `<div class="mermaid">` to `<pre class="mermaid">` (artifacts render it natively)
-4. Define the full palette on bare `:root` and set an explicit `background` on `body`
+2. Drop the mermaid ESM import → switch `<div class="mermaid">` to `<pre class="mermaid">` (artifacts render it natively)
+3. Define the full palette on bare `:root` and set an explicit `background` on `body`
+
+The font needs no change — the template already ships a webfont-free stack that is identical in both modes.
 
 ## Never
 

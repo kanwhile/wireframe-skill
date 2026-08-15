@@ -2,6 +2,8 @@
 
 Distilled from published guidance. Use it when deciding fidelity, what to annotate, or how much detail is enough.
 
+> **`SKILL.md` wins every conflict.** This file is background reading, not a second rulebook — where published practice and `SKILL.md` disagree (most often on color), follow `SKILL.md`.
+
 ## Standard symbols
 
 Widely shared across tools — readers who have seen a wireframe before recognize them without a legend (include one anyway).
@@ -19,7 +21,7 @@ Widely shared across tools — readers who have seen a wireframe before recogniz
 ## Fidelity
 
 - **lo-fi** optimizes learning speed when uncertainty is high — grayscale, coarse shapes, several variants side by side. Good for moderated usability tests of flow and navigation.
-- **mid-fi** is where most teams spend most of their time — the lo-fi skeleton plus draft copy, brand accents starting to appear, explicit input types (radio / checkbox / dropdown), charts fed with real data, still not pixel-perfect.
+- **mid-fi** is where most teams spend most of their time — the lo-fi skeleton plus draft copy, explicit input types (radio / checkbox / dropdown), charts fed with real data, still not pixel-perfect. (Published guidance often lets brand accents creep in here; `SKILL.md` does not — mid-fi stays grayscale, only with more steps of it.)
 - **hi-fi** optimizes execution clarity once uncertainty is low — demos and full usability testing.
 
 The question is not "rough or detailed" but "what do we still not know" — more unknowns, rougher wireframe.
@@ -30,7 +32,7 @@ The question is not "rough or detailed" but "what do we still not know" — more
 
 **Annotate** — elements with interaction or hidden state · anything implemented differently than a reader would assume · what happens as the user moves through a flow · error handling and validation · the outcome of every CTA · specific accessibility requirements (not generic statements).
 
-**Format** — number them 1, 2, 3 and keep all text in a single column. Avoid arrows pointing into the frame; they clutter it. Use a color that contrasts clearly with the wireframe itself.
+**Format** — number them 1, 2, 3 and keep all text in a single column. Avoid arrows pointing into the frame; they clutter it. Callouts must contrast sharply with the frame — get that from a near-black fill against the grays, never from a hue.
 
 **Writing** — the fewest words that carry the point · framed from the user's perspective, not purely technical · include the reasoning behind the choice · written during wireframing, not after.
 
@@ -41,7 +43,7 @@ The question is not "rough or detailed" but "what do we still not know" — more
 ## Layout principles
 
 - Start from research and business goals, not from appearance
-- **Hierarchy comes from size, position, and spatial grouping — not from color or typography.** Test by viewing in grayscale: if the most important element still stands out, the structure holds
+- **Hierarchy comes from size, position, and spatial grouping — never from color.** Type size and weight are part of "size", so use them; what is banned is hue, and decoration standing in for structure. Test by viewing in grayscale: if the most important element still stands out, the structure holds
 - Use realistic content wherever possible
 - Keep spacing and alignment consistent
 - Pick the right starting screen size (mobile-first when the real users are on mobile)

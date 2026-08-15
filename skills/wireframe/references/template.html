@@ -8,24 +8,24 @@
   No shadows, no gradients. Emphasis comes from fill darkness, weight, and border.
 
   LANGUAGE: UI labels, screen names and sample data must match the language of the real app.
-  The chrome below is English; translate it if the product is not.
+  Set `lang` below to that language, and translate the chrome (tab names, panel headings,
+  legend) to match it. Only the annotation TAGS stay English — they are structural keys.
 -->
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{Product}} — Product Wireframe</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <!-- Swap for the project's real font. Type is the one thing worth keeping honest,
-       because Thai line height and word length change the layout. -->
-  <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.2.4/dist/index.global.js"></script>
   <style type="text/tailwindcss">
     /* GRAYSCALE SCALE — nine steps, no hue.
        Do not add a brand color here. Swap to project tokens only at hi-fi. */
     @theme {
-      --font-sans: "Anuphan", system-ui, sans-serif;
+      /* ONE font stack, identical in normal and Artifact mode — no webfont request,
+         so the file never breaks under a strict CSP. Thai first-class: the system Thai
+         face is metrically what the real app ships. Swap in the project's real face at
+         hi-fi only, and self-host it if you do. */
+      --font-sans: system-ui, -apple-system, "Noto Sans Thai", sans-serif;
       --color-ink: #1F1F1F;          /* headings, bold values, primary button fill */
       --color-body: #333333;         /* default text */
       --color-soft: #6E6E6E;         /* labels, secondary text */
@@ -39,9 +39,15 @@
   </style>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
-    html, body { background: #E8E8E8; color: #333333; }
+    /* Thai needs more leading than Latin at the same size, and the browser only breaks
+       Thai at real word boundaries when word-break stays `normal`. */
+    html, body { background: #E8E8E8; color: #333333; line-height: 1.6; }
     :where(.grid, .flex) > * { min-width: 0; }
-    :where(p, h1, h2, h3, h4, h5, h6, li, td, th, button, a) { overflow-wrap: anywhere; }
+    /* `break-word`, never `anywhere`: `anywhere` chops Thai mid-syllable because Thai
+       has no spaces, so every line becomes a legal break point. */
+    :where(p, h1, h2, h3, h4, h5, h6, li, td, th, button, a) {
+      overflow-wrap: break-word; word-break: normal; line-break: normal;
+    }
     :where(img, svg) { max-width: 100%; height: auto; }
     .wf-scroll { overflow: auto; }
 
@@ -57,6 +63,13 @@
       display: inline-flex; align-items: center; justify-content: center;
       border: 2px solid #fff; z-index: 3;
     }
+    /* THREE WIDTHS, and they are not interchangeable:
+         360px — inside the phone frame. The narrowest real device the app must survive.
+         375px — the width THIS DOCUMENT is checked at. 360 + frame border fits inside it,
+                 which is why the page must never scroll horizontally at 375.
+         900px — where this document collapses desktop/auth frames to one column. It is a
+                 property of the wireframe page, NOT a breakpoint of the app being designed.
+       Never annotate 900px as if it were the product's responsive breakpoint. */
     .phone {
       width: 360px; max-width: 100%; height: 700px;
       border: 1px solid #BFBFBF; overflow: hidden;
@@ -522,10 +535,16 @@ sequenceDiagram
       }).join("");
     }
 
-    /* Tags are set in weight and border, not in hue — the unresolved ones just get a fill. */
+    /* All six tags must be told apart at a glance — by fill darkness, border weight and
+       border style, never by hue. Keep every tag listed: an unlisted tag silently falls
+       back to the `behavior` look and the reader loses the distinction. */
     const TAG_STYLE = {
-      open: "bg-ink text-white",
-      error: "bg-ink text-white",
+      behavior: "border border-line-strong text-soft",        // thin gray outline — the neutral default
+      rule:     "border-2 border-ink font-bold text-ink",     // heavy outline — a constraint you may not violate
+      error:    "bg-ink text-white",                          // solid dark — the loudest, for failure paths
+      a11y:     "border border-ink text-ink",                 // thin dark outline
+      dev:      "bg-fill text-white",                         // mid-gray fill — implementation-only
+      open:     "border border-dashed border-ink text-ink",   // dashed = undecided, same grammar as a dashed frame
     };
 
     function showScreen(id) {
@@ -586,7 +605,7 @@ sequenceDiagram
       theme: "base",
       securityLevel: "strict",
       themeVariables: {
-        fontFamily: "Anuphan, system-ui, sans-serif",
+        fontFamily: 'system-ui, -apple-system, "Noto Sans Thai", sans-serif',  // same stack as --font-sans
         primaryColor: "#EDEDED",
         primaryTextColor: "#1F1F1F",
         primaryBorderColor: "#9A9A9A",
