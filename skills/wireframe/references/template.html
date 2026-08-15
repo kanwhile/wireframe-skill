@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<!--
+  WIREFRAME TEMPLATE — copy this file and replace every {{...}}
+  Replace: product name, APP_NAV, the screens registry, the mermaid diagrams.
+  Drop tabs you don't need, but keep their order.
+
+  GRAYSCALE ONLY. No hue anywhere — not in the chrome, not in the frames, not for status.
+  No shadows, no gradients. Emphasis comes from fill darkness, weight, and border.
+
+  LANGUAGE: UI labels, screen names and sample data must match the language of the real app.
+  The chrome below is English; translate it if the product is not.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{Product}} — Product Wireframe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Swap for the project's real font. Type is the one thing worth keeping honest,
+       because Thai line height and word length change the layout. -->
+  <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.2.4/dist/index.global.js"></script>
+  <style type="text/tailwindcss">
+    /* GRAYSCALE SCALE — nine steps, no hue.
+       Do not add a brand color here. Swap to project tokens only at hi-fi. */
+    @theme {
+      --font-sans: "Anuphan", system-ui, sans-serif;
+      --color-ink: #1F1F1F;          /* headings, bold values, primary button fill */
+      --color-body: #333333;         /* default text */
+      --color-soft: #6E6E6E;         /* labels, secondary text */
+      --color-muted: #9A9A9A;        /* disabled rows, placeholders, chevrons */
+      --color-line: #DDDDDD;         /* row rules */
+      --color-line-strong: #BFBFBF;  /* input and control borders */
+      --color-fill: #9B9B9B;         /* selected segment, active fill */
+      --color-surface: #F4F4F4;      /* inset areas */
+      --color-bg: #E8E8E8;           /* page and the gutter between sections */
+    }
+  </style>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { background: #E8E8E8; color: #333333; }
+    :where(.grid, .flex) > * { min-width: 0; }
+    :where(p, h1, h2, h3, h4, h5, h6, li, td, th, button, a) { overflow-wrap: anywhere; }
+    :where(img, svg) { max-width: 100%; height: auto; }
+    .wf-scroll { overflow: auto; }
+
+    /* FLAT ONLY — no box-shadow, no gradient anywhere in this file.
+       A wireframe has no lighting model, and soft shadows are the fastest way to make
+       a draft read as a finished screen. Depth is drawn with borders and flat fills. */
+
+    /* Numbered callout — pairs with a line in the annotation panel. Needs a relative parent.
+       Distinguished by shape and fill, not by hue: a solid dark disc with a white ring. */
+    .wf-callout {
+      position: absolute; width: 18px; height: 18px; border-radius: 999px;
+      background: #1F1F1F; color: #fff; font-size: 10px; font-weight: 700;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 2px solid #fff; z-index: 3;
+    }
+    .phone {
+      width: 360px; max-width: 100%; height: 700px;
+      border: 1px solid #BFBFBF; overflow: hidden;
+      background: #E8E8E8; position: relative;
+    }
+    .desktop {
+      border: 1px solid #BFBFBF; overflow: hidden; min-height: 620px;
+      background: #fff; display: grid; grid-template-columns: 216px minmax(0, 1fr);
+    }
+    .auth-frame {
+      border: 1px solid #BFBFBF; overflow: hidden; background: #fff;
+      display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); min-height: 560px;
+    }
+    @media (max-width: 900px) {
+      .desktop, .auth-frame { grid-template-columns: minmax(0, 1fr); }
+      .desktop-aside, .auth-mascot { display: none; }
+    }
+    /* Content not decided yet — don't fake a finished design */
+    .skeleton { background: #E4E4E4; }
+    /* Crossed box = image / logo (the standard wireframe convention).
+       Inline SVG, so the file stays gradient-free. */
+    .wf-img {
+      background: #F4F4F4 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none' viewBox='0 0 100 100'%3E%3Cpath d='M0 0L100 100M100 0L0 100' stroke='%23BFBFBF' stroke-width='1' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+      border: 1px solid #BFBFBF;
+    }
+    /* Gray bar = text. Set the width to the realistic length — never Lorem ipsum. */
+    .wf-line { height: 8px; background: #E0E0E0; }
+    .wf-line + .wf-line { margin-top: 8px; }
+    .wf-line.w-70 { width: 70%; }
+    .wf-line.w-45 { width: 45%; }
+    .wf-line.head { height: 12px; width: 55%; background: #CFCFCF; }
+    .mermaid { overflow-x: auto; }
+    .mermaid svg { max-width: 100%; }
+  </style>
+</head>
+<body class="min-h-screen bg-bg font-sans text-body">
+  <header class="border-b border-line-strong bg-white">
+    <div class="mx-auto flex max-w-[1400px] flex-wrap items-start justify-between gap-4 px-5 py-5">
+      <div class="min-w-0">
+        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-soft">{{Product}} wireframe</p>
+        <h1 class="text-[1.85rem] font-semibold tracking-[-0.04em] text-ink">{{Screen structure, whole system}}</h1>
+        <!-- Always state the source. This is what separates a wireframe from an invented mock. -->
+        <p class="mt-1 max-w-2xl text-sm leading-6 text-soft">
+          Mapped from real routes in <code>{{src/main.tsx}}</code>, the menu in <code>{{app-sidebar.tsx}}</code>, and <code>{{docs/...}}</code>
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-2 text-xs">
+        <span class="border border-line-strong px-3 py-1 font-semibold text-ink">{{Surface 1 · /app/*}}</span>
+        <span class="border border-line px-3 py-1 font-semibold text-soft">{{Surface 2 · /liff/*}}</span>
+      </div>
+    </div>
+    <nav class="mx-auto flex max-w-[1400px] gap-1 overflow-x-auto px-5 pb-3" role="tablist">
+      <button type="button" class="tab-btn px-3 py-2 text-sm font-medium" data-tab="overview">Overview</button>
+      <button type="button" class="tab-btn px-3 py-2 text-sm font-medium text-soft" data-tab="ia">Screen map</button>
+      <button type="button" class="tab-btn px-3 py-2 text-sm font-medium text-soft" data-tab="flows">Flows</button>
+      <button type="button" class="tab-btn px-3 py-2 text-sm font-medium text-soft" data-tab="screens">Screens</button>
+      <button type="button" class="tab-btn px-3 py-2 text-sm font-medium text-soft" data-tab="review">Review</button>
+    </nav>
+  </header>
+
+  <main class="mx-auto max-w-[1400px] px-5 py-8">
+    <!-- ═══ 1. OVERVIEW: how many surfaces, who sees what, what can be switched off ═══ -->
+    <section id="tab-overview" class="tab-panel space-y-6">
+      <div class="grid gap-4 md:grid-cols-3">
+        <article class="border border-line bg-white p-5">
+          <p class="text-xs font-semibold uppercase tracking-wider text-muted">Surface 1</p>
+          <h2 class="mt-1 text-xl font-semibold tracking-[-0.03em] text-ink">{{App}}</h2>
+          <p class="mt-2 text-sm leading-6 text-soft">{{who uses it · where · what layout · which roles}}</p>
+          <ul class="mt-3 space-y-1 text-sm text-body"><li>{{main screen groups}}</li></ul>
+        </article>
+        <!-- repeat per surface -->
+      </div>
+
+      <div class="border border-line bg-white p-5">
+        <h2 class="text-lg font-semibold text-ink">Who sees what</h2>
+        <p class="mt-1 text-sm text-soft">From <code>{{ProtectedRoute / usePermission / ADR ...}}</code></p>
+        <div class="mt-4 overflow-x-auto">
+          <table class="w-full min-w-[720px] text-left text-sm">
+            <thead><tr class="border-b border-line-strong text-xs uppercase tracking-wider text-muted">
+              <th class="py-2 pr-3">Role</th><th class="py-2 pr-3">Enters via</th><th class="py-2 pr-3">Can do</th><th class="py-2">Blocked from</th>
+            </tr></thead>
+            <tbody class="align-top">
+              <tr class="border-b border-line">
+                <td class="py-3 pr-3 font-semibold text-ink">{{Role}}</td>
+                <td class="py-3 pr-3">{{entry point}}</td><td class="py-3 pr-3">{{permissions}}</td><td class="py-3">{{blocked}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 2. SCREEN MAP ═══ -->
+    <section id="tab-ia" class="tab-panel hidden space-y-6">
+      <article class="border border-line bg-white p-5">
+        <h3 class="font-semibold text-ink">{{Entry point per user type}}</h3>
+        <div class="mermaid mt-4">
+flowchart TD
+  Visitor["{{New visitor}}"] --> Login["/login"]
+  Login --> App["App /app/*"]
+        </div>
+      </article>
+    </section>
+
+    <!-- ═══ 3. FLOWS — must include the failure branch, not only the happy path ═══ -->
+    <section id="tab-flows" class="tab-panel hidden space-y-6">
+      <article class="border border-line bg-white p-5">
+        <h3 class="font-semibold text-ink">1. {{Flow name}}</h3>
+        <p class="mt-1 text-sm text-soft">{{the rule that governs this flow}}</p>
+        <div class="mermaid mt-4">
+sequenceDiagram
+  actor M as {{Member}}
+  actor O as {{Officer}}
+  participant S as {{System}}
+  M->>S: {{submit request}}
+  S->>O: {{lands in the pending queue}}
+  alt {{blocking condition}}
+    S-->>M: {{rejected with reason}}
+  else {{passes}}
+    O->>S: {{approve}}
+    S-->>M: {{new status}}
+  end
+        </div>
+      </article>
+    </section>
+
+    <!-- ═══ 4. SCREENS ═══ -->
+    <section id="tab-screens" class="tab-panel hidden">
+      <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 class="text-xl font-semibold tracking-[-0.03em] text-ink">Pick a screen from the left</h2>
+          <p class="mt-1 text-sm text-soft">Numbers in the frame match the notes below it</p>
+        </div>
+        <p id="screen-meta" class="border border-line-strong px-3 py-1 text-xs font-semibold text-ink"></p>
+      </div>
+
+      <!-- Legend — tell the reader what each symbol means -->
+      <div class="mb-4 flex flex-wrap items-center gap-x-5 gap-y-2 border border-line bg-white px-4 py-3 text-xs text-soft">
+        <span class="flex items-center gap-2"><span class="relative inline-block h-[18px] w-[18px]"><span class="wf-callout" style="position:static">1</span></span> Annotated point</span>
+        <span class="flex items-center gap-2"><span class="wf-img inline-block h-5 w-7"></span> Image / logo</span>
+        <span class="flex items-center gap-2"><span class="wf-line inline-block w-10"></span> Text</span>
+        <span class="flex items-center gap-2"><span class="skeleton inline-block h-4 w-10"></span> Not decided yet</span>
+        <span class="flex items-center gap-2"><span class="inline-block h-4 w-7 border border-dashed border-line-strong"></span> Module off / undesigned</span>
+        <span class="flex items-center gap-2"><span class="inline-block h-4 w-7 bg-fill"></span> Selected / active</span>
+      </div>
+
+      <div class="grid gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
+        <aside class="h-fit border border-line bg-white p-3 lg:sticky lg:top-4">
+          <div id="screen-nav" class="space-y-3 text-sm"></div>
+        </aside>
+        <div class="min-w-0">
+          <div id="screen-stage" class="wf-scroll border border-line bg-surface p-4"></div>
+          <!-- Annotation panel — numbers here must always match the .wf-callout marks, both directions -->
+          <aside id="screen-notes" class="mt-4 border border-line bg-white p-4 text-sm leading-6 text-soft"></aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 5. REVIEW — close with questions that let the user steer the next round ═══ -->
+    <section id="tab-review" class="tab-panel hidden space-y-6">
+      <h2 class="text-xl font-semibold tracking-[-0.03em] text-ink">What should get more detail next?</h2>
+      <form class="border border-line bg-white p-5"
+        onsubmit="event.preventDefault(); const c = new FormData(this).get('focus'); if (c) { this.querySelector('[data-queued]').textContent = 'Answer: ' + c; }">
+        <h3 class="font-semibold text-ink">1. Which surface do we detail next?</h3>
+        <div class="mt-3 grid gap-2 sm:grid-cols-2">
+          <label class="flex cursor-pointer items-start gap-2 border border-line p-3">
+            <input type="radio" name="focus" value="{{Surface 1}}" checked />
+            <span><strong>{{Surface 1}}</strong><br /><span class="text-xs text-soft">{{screens in this group}}</span></span>
+          </label>
+        </div>
+        <div class="mt-4 flex flex-wrap items-center gap-3">
+          <button type="submit" class="bg-ink px-4 py-2 text-sm font-medium text-white">Queue this answer</button>
+          <span data-queued class="text-xs text-muted">Not queued</span>
+        </div>
+      </form>
+
+      <form class="border border-line bg-white p-5"
+        onsubmit="event.preventDefault(); const t = new FormData(this).get('gap'); if (t) { this.querySelector('[data-queued]').textContent = 'Recorded — copy this back to the agent'; }">
+        <h3 class="font-semibold text-ink">2. Which screen is missing, or wrong against the real app?</h3>
+        <textarea name="gap" rows="3" class="mt-3 w-full border border-line-strong bg-white px-3 py-2 text-sm" placeholder="e.g. the maintenance screen doesn't exist yet"></textarea>
+        <div class="mt-4 flex flex-wrap items-center gap-3">
+          <button type="submit" class="bg-ink px-4 py-2 text-sm font-medium text-white">Queue this answer</button>
+          <span data-queued class="text-xs text-muted">Not queued</span>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    /* ───── Logo: swap for the project's real svg ───── */
+    const logo = `<svg viewBox="0 0 100 100" class="h-8 w-8 text-ink" fill="none"><rect x="5" y="5" width="90" height="90" stroke="currentColor" stroke-width="6"/></svg>`;
+
+    /* ───── Menu: copy labels verbatim from the real sidebar, never reword them ───── */
+    const APP_NAV = [
+      { id: "app-dashboard", label: "{{Dashboard}}" },
+      { id: "app-list",      label: "{{Main list}}" },
+      { id: "app-settings",  label: "{{Settings}}", section: "tail" },
+    ];
+
+    /* ═════ FRAMES ═════ */
+    function sidebar(active) {
+      const item = (id, label, extra = "") => `
+        <button type="button" data-go="${id}" class="flex w-full items-center justify-between px-3 py-2 text-left text-[13px] ${id === active ? "bg-fill font-medium text-white" : "text-soft"}">
+          <span>${label}</span>${extra}
+        </button>`;
+      const main = APP_NAV.filter((n) => !n.section);
+      const tail = APP_NAV.filter((n) => n.section);
+      return `
+        <aside class="desktop-aside flex flex-col border-r border-line-strong bg-white p-4">
+          <div class="mb-4 flex items-center gap-2 text-ink">${logo}<div>
+            <p class="text-[1.35rem] font-semibold leading-none tracking-[-0.05em]">{{Product}}</p>
+            <p class="text-[11px] text-muted">{{Sample org name}}</p>
+          </div></div>
+          <div>${main.map((n) => item(n.id, n.label, n.badge ? `<span class="text-[10px] text-muted">${n.badge}</span>` : "")).join("")}</div>
+          <div class="mt-auto pt-6">
+            ${tail.map((n) => item(n.id, n.label)).join("")}
+            <div class="mt-2 flex items-center gap-2 px-2 py-2">
+              <div class="h-8 w-8 rounded-full border border-line-strong"></div>
+              <div><p class="text-xs font-medium">{{Sample user}}</p><p class="text-[11px] text-muted">{{role}}</p></div>
+            </div>
+          </div>
+        </aside>`;
+    }
+
+    function desktop(active, crumb, body) {
+      return `<div class="desktop">
+        ${sidebar(active)}
+        <div class="min-w-0 bg-bg">
+          <header class="flex h-14 items-center gap-2 border-b border-line-strong bg-white px-4 text-sm text-soft">
+            <span class="border border-line-strong px-1.5 py-0.5 text-[11px]">☰</span><span>${crumb}</span>
+          </header>
+          <div class="relative p-5">${body}</div>
+        </div>
+      </div>`;
+    }
+
+    function phone(body) {
+      return `<div class="phone"><div class="relative h-full overflow-auto">${body}</div></div>`;
+    }
+
+    function auth(body) {
+      return `<div class="auth-frame">
+        <section class="p-8">
+          <div class="mb-8 flex items-center gap-2 text-ink">${logo}<span class="text-[2rem] font-semibold tracking-[-0.05em]">{{Product}}</span></div>
+          ${body}
+        </section>
+        <section class="auth-mascot border-l border-line bg-surface p-8">
+          <div class="flex h-full flex-col justify-end border border-line bg-white p-6">
+            <p class="text-2xl font-semibold tracking-[-0.04em] text-ink">{{tagline}}</p>
+          </div>
+        </section>
+      </div>`;
+    }
+
+    /* ═════ MOBILE PARTS — the row/section grammar most native screens are built from ═════ */
+
+    /* Top bar: back affordance, centered title, right-hand action */
+    function navbar(title) {
+      return `<div class="flex items-center justify-between border-b border-line bg-white px-3 py-3">
+        <span class="flex h-8 w-8 items-center justify-center border border-line-strong text-sm text-body">‹</span>
+        <p class="text-[15px] font-semibold text-ink">${title}</p>
+        <span class="h-7 w-7 rounded-full border border-line-strong"></span>
+      </div>`;
+    }
+
+    /* A white block separated from the next by the gray page gutter.
+       Grouping IS the hierarchy here — what sits together belongs together. */
+    function group(title, rows) {
+      return `<div class="mt-2 border-y border-line bg-white">
+        ${title ? `<p class="px-4 pb-2 pt-3 text-[15px] font-semibold text-ink">${title}</p>` : ""}
+        ${rows.join("")}
+      </div>`;
+    }
+
+    /* label left, value right. o.chevron = navigates · o.disabled = present but not usable */
+    function row(label, value = "", o = {}) {
+      return `<div class="flex items-center justify-between gap-3 border-t border-line px-4 py-3 first:border-t-0">
+        <span class="text-[14px] ${o.disabled ? "text-muted" : "text-body"}">${label}</span>
+        <span class="flex items-center gap-1 text-[14px] ${o.disabled ? "text-muted" : "text-ink"}">
+          ${value}${o.chevron ? `<span class="text-muted">›</span>` : ""}
+        </span>
+      </div>`;
+    }
+
+    /* Banner row — a rule or deadline that governs the whole screen. Darker fill, not a color. */
+    function banner(title, sub) {
+      return `<div class="flex items-start gap-3 border-y border-line-strong bg-[#D8D8D8] px-4 py-3">
+        <span class="mt-0.5 h-5 w-5 shrink-0 border border-ink bg-white"></span>
+        <span class="min-w-0 flex-1">
+          <p class="text-[14px] font-semibold text-ink">${title}</p>
+          <p class="text-[12px] text-soft">${sub}</p>
+        </span>
+        <span class="text-muted">›</span>
+      </div>`;
+    }
+
+    /* Selected segment = dark fill + white text. The only "highlight" mechanism in the file. */
+    function segmented(options, active) {
+      return `<div class="flex border border-line-strong">
+        ${options.map((o, i) => `<span class="flex-1 py-2 text-center text-[13px] ${i === active ? "bg-fill font-semibold text-white" : "bg-white text-body"}">${o}</span>`).join("")}
+      </div>`;
+    }
+
+    function toggle(on) {
+      return `<span class="inline-flex h-6 w-11 items-center rounded-full ${on ? "justify-end bg-ink" : "justify-start border border-line-strong bg-white"} px-0.5">
+        <span class="h-5 w-5 rounded-full ${on ? "bg-white" : "border border-line-strong bg-white"}"></span>
+      </span>`;
+    }
+
+    /* Icons as a bordered box with a glyph — never a real icon set, which implies a decision
+       nobody has made yet */
+    function iconBox(glyph, label) {
+      return `<span class="inline-flex items-center gap-1 border border-line px-1.5 py-1 text-[12px] text-soft">
+        <span class="flex h-4 w-4 items-center justify-center border border-line-strong text-[9px]">${glyph}</span>${label}
+      </span>`;
+    }
+
+    /* Pinned action bar. Primary = solid dark, secondary = outline. */
+    function actionBar(secondary, primary) {
+      return `<div class="absolute inset-x-0 bottom-0 flex gap-3 border-t border-line bg-white px-4 py-3">
+        <span class="flex-1 border border-line-strong py-2.5 text-center text-[14px] font-semibold text-body">${secondary}</span>
+        <span class="flex-1 bg-ink py-2.5 text-center text-[14px] font-semibold text-white">${primary}</span>
+      </div>`;
+    }
+
+    /* No tone parameter by design. Severity is a WORD, not a fill — a red card in a wireframe
+       starts an argument about the shade instead of about the metric.
+       `flag` renders a bordered uppercase chip, e.g. metric("Overdue", "3", "needs action"). */
+    function metric(title, value, flag) {
+      return `<div class="border border-line bg-white p-4">
+        <p class="text-xs text-soft">${title}</p>
+        <p class="mt-1 text-2xl font-semibold text-ink">${value}</p>
+        ${flag
+          ? `<p class="mt-2 inline-block border border-line-strong px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-soft">${flag}</p>`
+          : `<div class="skeleton mt-3 h-2 w-24"></div>`}
+      </div>`;
+    }
+
+    /* ───── Screen registry — the core of the file
+       Every state (empty / error / success / dialog / toast / document) gets its own entry.
+
+       why         = screen-level rationale citing a rule or ADR, not a description of the picture
+       annotations = only what the picture cannot say; numbers restart at 1 on every screen
+                     tag: behavior | rule | error | a11y | dev | open
+       Every number here needs a .wf-callout in the frame, and vice versa. ───── */
+    const screens = {
+      "app-dashboard": {
+        group: "App",
+        label: "{{Dashboard}}",
+        route: "/app/dashboard",
+        why: "{{what the user is meant to see first · who is blocked and where they go instead}}",
+        annotations: [
+          { n: 1, tag: "behavior", text: "{{where the card leads — e.g. filters the list by that metric rather than opening a new page}}" },
+          { n: 2, tag: "rule",     text: "{{the rule behind the flag — e.g. overdue means due_date passed and not returned; it is not a separate status}}" },
+          { n: 3, tag: "open",     text: "{{an undecided point; delete once decided}}" },
+        ],
+        html: () => desktop("app-dashboard", "{{Dashboard}}", `
+          <div class="relative grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            ${metric("{{Metric}}", "248")}
+            ${metric("{{Needs attention}}", "18", "{{watch}}")}
+            ${metric("{{Problem}}", "3", "{{needs action}}")}
+            <span class="wf-callout" style="top:8px;left:8px">1</span>
+            <span class="wf-callout" style="top:8px;right:8px">2</span>
+          </div>
+          <div class="relative mt-4 border border-line bg-white p-4">
+            <p class="text-sm font-medium text-ink">{{To do}}</p>
+            <div class="mt-3 space-y-2">${[1,2,3].map(() => `<div class="skeleton h-10 w-full"></div>`).join("")}</div>
+            <span class="wf-callout" style="top:-8px;right:-8px">3</span>
+          </div>
+        `),
+      },
+
+      "app-list-empty": {
+        group: "App",
+        label: "{{Main list}} · empty",
+        route: "/app/{{list}} · empty",
+        why: "{{empty is the first real screen a new user sees, so it must always offer a way forward}}",
+        annotations: [
+          { n: 1, tag: "behavior", text: "{{where this button goes, and what state the user returns to}}" },
+        ],
+        html: () => desktop("app-list", "{{Main list}}", `
+          <div class="relative border border-dashed border-line-strong bg-white p-10 text-center">
+            <div class="wf-img mx-auto h-16 w-20"></div>
+            <p class="mt-4 text-sm text-soft">{{No data yet — say what can be done about it}}</p>
+            <span class="mt-4 inline-block bg-ink px-4 py-2.5 text-sm text-white">{{Add the first one}}</span>
+            <span class="wf-callout" style="bottom:20px;right:calc(50% - 90px)">1</span>
+          </div>
+        `),
+      },
+
+      /* Mobile settings/detail screen — the row-and-section grammar in full.
+         Use this as the model for any native form or detail screen. */
+      "mobile-settings": {
+        group: "Mobile",
+        label: "{{Settings}}",
+        route: "/{{settings}}",
+        why: "{{why these fields are grouped this way · which grouping comes from a real constraint}}",
+        annotations: [
+          { n: 1, tag: "rule",     text: "{{the deadline or request that locks this screen · what happens when it expires}}" },
+          { n: 2, tag: "behavior", text: "{{a chevron row opens a picker, not a free-text field — the value must come from a fixed list}}" },
+          { n: 3, tag: "behavior", text: "{{turning this on hides the section below rather than disabling it}}" },
+          { n: 4, tag: "rule",     text: "{{these rows are dim because the choice above locks them · the user cannot switch back on their own}}" },
+          { n: 5, tag: "a11y",     text: "{{the action bar stays pinned; the list scrolls under it and never hides the last row}}" },
+        ],
+        html: () => phone(`
+          ${navbar("{{Screen title}}")}
+          <div class="relative pb-20">
+            <div class="relative">
+              ${banner("{{Request #SOF-1042 ends 31 Aug 2569 (5 days left)}}", "{{after that it reverts · submit a new request for the whole batch}}")}
+              <span class="wf-callout" style="top:6px;right:26px">1</span>
+            </div>
+
+            <div class="relative">
+              ${group("{{Warehouse address}}", [
+                row("{{Store address}}", "{{72 Chaeng Watthana Soi 1...}}"),
+                row("{{Province}}", "{{Bangkok}}", { chevron: true }),
+                row("{{District}}", "{{Lak Si}}", { chevron: true }),
+                row("{{Sub-district}}", "{{Talat Bang Khen}}", { chevron: true }),
+                row("{{Postcode}}", "10210", { chevron: true }),
+                row("{{Phone}}", "089-345-4566"),
+              ])}
+              <span class="wf-callout" style="top:96px;right:8px">2</span>
+            </div>
+
+            <div class="relative">
+              ${group("{{Return address}}", [
+                row("{{Same as the warehouse address}}", toggle(true)),
+              ])}
+              <span class="wf-callout" style="bottom:8px;right:64px">3</span>
+            </div>
+
+            <div class="relative mt-2 border-y border-line bg-white px-4 py-3">
+              <p class="pb-3 text-[15px] font-semibold text-ink">{{Delivery setup}}</p>
+              ${segmented(["{{Use courier}}", "{{Ship it myself}}"], 1)}
+              <p class="pt-2 text-[12px] text-soft">{{Locked by request #SOF-1042 until 31 Aug 2569 · cannot be switched back}}</p>
+            </div>
+
+            <div class="relative">
+              ${group("", [
+                row("{{Handover}}", `${iconBox("F", "{{drop-off}}")} ${iconBox("P", "{{pickup}}")}`, { disabled: true }),
+                row("{{Default courier}}", "{{Flash Express}}", { disabled: true }),
+              ])}
+              <span class="wf-callout" style="top:6px;left:8px">4</span>
+            </div>
+          </div>
+          ${actionBar("{{Cancel}}", "{{Save}}")}
+          <span class="wf-callout" style="bottom:44px;left:8px">5</span>
+        `),
+      },
+    };
+
+    /* Must match the group values above, in the order you want them listed */
+    const groups = ["App", "Mobile"];
+
+    /* ───── Runtime: nav / stage / annotations / deep link ───── */
+    function renderNav(active) {
+      document.getElementById("screen-nav").innerHTML = groups.map((g) => {
+        const items = Object.entries(screens).filter(([, s]) => s.group === g);
+        return `<div>
+          <p class="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted">${g}</p>
+          ${items.map(([id, s]) => `<button type="button" data-go="${id}" class="mb-0.5 flex w-full px-2 py-1.5 text-left text-[13px] ${id === active ? "bg-fill font-medium text-white" : "text-soft"}">${s.label}</button>`).join("")}
+        </div>`;
+      }).join("");
+    }
+
+    /* Tags are set in weight and border, not in hue — the unresolved ones just get a fill. */
+    const TAG_STYLE = {
+      open: "bg-ink text-white",
+      error: "bg-ink text-white",
+    };
+
+    function showScreen(id) {
+      const screen = screens[id];
+      if (!screen) return;
+      document.getElementById("screen-stage").innerHTML = screen.html();
+      document.getElementById("screen-meta").textContent = screen.route;
+
+      const rows = (screen.annotations || []).map((a) => `
+        <li class="flex gap-3">
+          <span class="wf-callout mt-0.5 shrink-0" style="position:static">${a.n}</span>
+          <span class="min-w-0">
+            <span class="mr-2 px-1.5 py-0.5 text-[10px] font-semibold uppercase ${TAG_STYLE[a.tag] || "border border-line-strong text-soft"}">${a.tag}</span>
+            ${a.text}
+          </span>
+        </li>`).join("");
+
+      document.getElementById("screen-notes").innerHTML = `
+        <p class="text-xs font-semibold uppercase tracking-wider text-muted">Why this screen looks like this</p>
+        <p class="mt-1">${screen.why || ""}</p>
+        ${rows ? `<p class="mt-4 border-t border-line pt-3 text-xs font-semibold uppercase tracking-wider text-muted">Notes by number</p>
+        <ul class="mt-2 space-y-2">${rows}</ul>` : ""}`;
+
+      renderNav(id);
+      history.replaceState(null, "", "#screen=" + id);
+    }
+
+    /* Any element carrying data-go switches screens — no per-button listeners needed */
+    document.body.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-go]");
+      if (!btn) return;
+      showScreen(btn.getAttribute("data-go"));
+      document.getElementById("tab-screens").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    document.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach((b) => {
+          b.classList.toggle("bg-ink", b === btn);
+          b.classList.toggle("text-white", b === btn);
+          b.classList.toggle("text-soft", b !== btn);
+        });
+        document.querySelectorAll(".tab-panel").forEach((p) => p.classList.toggle("hidden", p.id !== "tab-" + btn.dataset.tab));
+      });
+    });
+    document.querySelector('.tab-btn[data-tab="overview"]').classList.add("bg-ink", "text-white");
+
+    const DEFAULT_SCREEN = "mobile-settings";
+    const initial = new URLSearchParams(location.hash.slice(1)).get("screen") || DEFAULT_SCREEN;
+    showScreen(screens[initial] ? initial : DEFAULT_SCREEN);
+  </script>
+
+  <!-- mermaid: grayscale to match. Delete this whole block for Artifact mode and use <pre class="mermaid"> instead. -->
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.15.0/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "base",
+      securityLevel: "strict",
+      themeVariables: {
+        fontFamily: "Anuphan, system-ui, sans-serif",
+        primaryColor: "#EDEDED",
+        primaryTextColor: "#1F1F1F",
+        primaryBorderColor: "#9A9A9A",
+        lineColor: "#6E6E6E",
+        secondaryColor: "#F4F4F4",
+        tertiaryColor: "#FFFFFF",
+      },
+    });
+  </script>
+</body>
+</html>
