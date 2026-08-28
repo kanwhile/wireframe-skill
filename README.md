@@ -66,12 +66,37 @@ Each screen carries a `why` (the rule or ADR behind the layout, not a descriptio
 ```
 skills/wireframe/
 ├── SKILL.md                      the method: principles, process, checklist
-└── references/
-    ├── template.html             ready-to-copy scaffold — replace every {{...}}
-    └── conventions.md            standard wireframe conventions and fidelity levels
+├── references/
+│   ├── template.html             ready-to-copy scaffold — replace every {{...}}
+│   └── conventions.md            standard wireframe conventions and fidelity levels
+└── scripts/
+    └── self_check.py             fails the file on any rule a reader would miss
 ```
 
 The template ships the frames (`desktop`, `phone`, `auth`), the mobile row/section grammar most native screens are built from (`navbar`, `group`, `row`, `banner`, `segmented`, `toggle`, `iconBox`, `actionBar`), the placeholder vocabulary (crossed box for an image, gray bars for text), and the screen registry that drives navigation, deep links, and the annotation panel.
+
+## The checker
+
+A rule that only lives in prose is a rule that ships broken. Before delivering, the skill runs its own output through a linter that ships with it — no dependencies, no build:
+
+```sh
+python3 skills/wireframe/scripts/self_check.py docs/wireframes/my-app.html
+```
+
+```
+FAIL docs/wireframes/my-app.html
+  - line 88: hue found: #eb6c36 is not gray
+  - line 91: box-shadow is not allowed: box-shadow: 0 2px 8px #0000001a
+  - line 240: screen `app-inbox`: callout [4] in the frame has no line in the panel
+  - line 240: screen `app-inbox`: annotation [3] has no callout in the frame
+  - line 302: screen `liff-form`: unknown tag `note`
+```
+
+It catches hue in every form it can hide in — hex, `rgb()`/`hsl()`, CSS named colors, Tailwind color utilities, even a color inside an SVG data URI — plus shadows, gradients, Lorem, unreplaced `{{...}}`, a Google Fonts link, external images, dark mode, `word-break: anywhere` against Thai, a Flows tab with no mermaid, and every way callouts and annotations can drift apart. `--artifact` tightens it for a strict-CSP build; `--strict` turns warnings into failures.
+
+What it cannot see stays a human checklist item: whether a route exists in the real code, whether a `why` cites a rule or just describes the picture, whether an annotation says something the picture already said.
+
+`scripts/test-self-check.py` keeps it honest with 48 adversarial cases — 36 mutations that must be caught and 12 legal shapes that must stay silent, because a checker that fires on everything gets switched off as fast as one that never fires.
 
 ## Notes
 
