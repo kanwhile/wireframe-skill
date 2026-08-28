@@ -9,6 +9,7 @@ Deliverable is one `.html` file that opens in a browser with no build step. Tabs
 
 - `references/template.html` — ready-to-copy scaffold; replace every `{{...}}`
 - `references/conventions.md` — standard wireframe conventions; read it when deciding fidelity or what to annotate. **This file wins any conflict with it.**
+- `scripts/self_check.py` — run it on the finished file before delivering (see § Verify)
 
 **A wireframe without annotations is not a deliverable** — it is a set of gray boxes everyone interprets differently. The picture shows *what it looks like*; annotations explain *how it behaves and why*.
 
@@ -142,15 +143,27 @@ Replace tokens, product name, `APP_NAV`, `screens`, and the mermaid diagrams. **
 
 ### 3. Verify before delivering
 
+Run the checker first — it turns the mechanical rules below into pass/fail:
+
+```bash
+python3 <skill-dir>/scripts/self_check.py <file>     # add --artifact for an Artifact-mode build
+```
+
+It fails on hue of any kind (hex, `rgb`/`hsl`, CSS named colors, Tailwind color
+utilities), shadows and gradients, Lorem, unreplaced `{{...}}`, a Google Fonts link,
+external images, dark mode, `word-break: anywhere`, tabs out of order, a Flows tab
+with no mermaid, an orphan callout or annotation in either direction, duplicate or
+non-contiguous numbering, an unknown tag, and a screen missing `why` or `route`.
+`OK <file>` or it lists what to fix. Then check by hand what it cannot see:
+
 - [ ] Every route exists in the code, or is explicitly marked as a proposal
-- [ ] Every callout in a frame has a panel line, and every panel line has a callout — no orphans either direction
 - [ ] No annotation restates something already visible
-- [ ] Every screen has a `why` that cites a rule rather than describing the picture
+- [ ] Every screen's `why` cites a rule rather than describing the picture
 - [ ] Every CTA has a destination (`data-go`, or an annotation naming it)
 - [ ] Flows include failure branches (`alt` / `else`), not just the happy path
 - [ ] Key states have their own screens — at minimum empty + error for the main feature
 - [ ] Deep link `#screen=<id>` works · no horizontal page scroll at 375px
-- [ ] Legend present · no Lorem ipsum · no dark mode · no real photography
+- [ ] Legend present · no real photography · sample data in one date era throughout
 
 ### 4. Deliver
 
